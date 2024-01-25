@@ -1,0 +1,44 @@
+---
+# fetch_and_modify_a_kubeconfig_file/tasks/main.yml
+
+- name: 'Check if we already have a microk8s-kubeconfig file'
+  ansible.builtin.stat:
+    path: "{{ local_file_name }}"
+  delegate_to: 'localhost'
+  become: false
+  register: does_kubeconfig_exist
+
+- name: 'Fetch kubeconfig to Ansible control node'
+  ansible.builtin.fetch:
+    src: "{{ remote_file_path }}"
+    dest: "{{ local_file_name }}"
+    mode: '0600'
+    flat: true
+  when:
+    - 'not does_kubeconfig_exist.stat.exists | bool'
+
+- name: 'Check if we now have a microk8s-kubeconfig file'
+  ansible.builtin.stat:
+    path: "{{ local_file_name }}"
+  delegate_to: 'localhost'
+  become: false
+  register: does_kubeconfig_exist_now
+
+- name: 'Fix permissions on microk8s-kubeconfig'
+  ansible.builtin.file:
+    path: "{{ local_file_name }}"
+    mode: '0600'
+  delegate_to: 'localhost'
+  become: false
+  when:
+    - 'does_kubeconfig_exist_now.stat.exists | bool'
+
+- name: 'Change server IP in kubeconfig file to external_ip (or the default IPv4 address)'
+  ansible.builtin.lineinfile:
+    path: "{{ local_file_name }}"
+    regexp: '(\s*)server: https://127.0.0.1:(.*)'
+    line: '\1server: https://{{ actual_IP_to_use | default(hostvars[inventory_hostname]["ansible_default_ipv4"]["address"]) }}:\2'
+    backrefs: true
+  delegate_to: 'localhost'
+  become: false
+  ignore_errors: "{{ ansible_check_mode }}"
