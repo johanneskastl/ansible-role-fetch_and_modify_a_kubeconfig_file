@@ -1,0 +1,33 @@
+galaxy_info:
+  role_name: 'fetch_and_modify_a_kubeconfig_file'
+  namespace: 'johanneskastl'
+  author: 'Johannes Kastl'
+  description: 'Fetch a kubeconfig file from e.g. a k3s or microk8s server and replace 127.0.0.1 with an external IP address'
+
+  license: 'BSD-3-Clause'
+
+  min_ansible_version: '2.12'
+
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: opensuse
+      versions:
+        - all
+    - name: SLES
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+
+  galaxy_tags: []
+
+dependencies: []
