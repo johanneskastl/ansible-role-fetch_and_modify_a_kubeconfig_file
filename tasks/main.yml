@@ -36,8 +36,8 @@
 - name: 'Change server IP in kubeconfig file to external_ip (or the default IPv4 address)'
   ansible.builtin.lineinfile:
     path: "{{ local_file_name }}"
-    regexp: '(\s*)server: https://127.0.0.1:(.*)'
-    line: '\1server: https://{{ actual_IP_to_use | default(hostvars[inventory_hostname]["ansible_default_ipv4"]["address"]) }}:\2'
+    regexp: '(\s*)server: https://(127.0.0.1|localhost):(.*)'
+    line: '\1server: https://{{ actual_IP_to_use | default(hostvars[inventory_hostname]["ansible_default_ipv4"]["address"]) }}:\3'
     backrefs: true
   delegate_to: 'localhost'
   become: false
